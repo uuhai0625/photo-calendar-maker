@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>
+  (function() {
+    var GA_ID = 'G-51CG04R4DY';
+    var isLocalDev = ['localhost', '127.0.0.1', ''].includes(location.hostname);
+    if (isLocalDev) return;
+    try { if (/[?&]no_ga=0/.test(location.search)) localStorage.removeItem('no_ga'); if (/[?&]no_ga=1/.test(location.search)) localStorage.setItem('no_ga', '1'); if (localStorage.getItem('no_ga') === '1') return; } catch (e) {}
+    var gaQ = new URLSearchParams(location.search); if (gaQ.get('obs') === '1' || gaQ.get('no_ga') === '1') return;
+    var s = document.createElement('script');
+    s.async = true;
+    s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
+    document.head.appendChild(s);
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', GA_ID);
+    document.addEventListener('click', function(e) {
+      var a = e.target && e.target.closest ? e.target.closest('a[href*="booth.pm"]') : null;
+      if (!a) return;
+      gtag('event', 'booth_click', { link_url: a.href, link_id: a.id || '', link_text: (a.textContent || '').trim().slice(0, 40) });
+    });
+  })();
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="写真入りカレンダーを無料で作成。好きな写真を選ぶだけで、2027年の祝日入りカレンダーに。壁掛け(A4)・卓上(はがき)・コンビニの写真プリント(L判)・1枚に12か月の年間カレンダー。日曜・月曜はじまり、写真の位置も調整できます。登録不要、写真は送信しません。">
+<link rel="canonical" href="https://uuhai0625.github.io/photo-calendar-maker/">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:title" content="写真カレンダーメーカー|写真入りカレンダーを無料で作成・印刷(2027年・祝日入り/卓上・壁掛け・年間)">
+<meta property="og:description" content="写真入りカレンダーを無料で作成。好きな写真を選ぶだけで、2027年の祝日入りカレンダーに。壁掛け(A4)・卓上(はがき)・コンビニの写真プリント(L判)・1枚に12か月の年間カレンダー。日曜・月曜はじまり、写真の位置も調整できます。登録不要、写真は送信しません。">
+<meta property="og:url" content="https://uuhai0625.github.io/photo-calendar-maker/">
+<meta property="og:image" content="https://uuhai0625.github.io/photo-calendar-maker/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<title>写真カレンダーメーカー|写真入りカレンダーを無料で作成・印刷(2027年・祝日入り/卓上・壁掛け・年間)</title>
+<style>
+  :root {
+    --bg: #f4f5f2;
+    --panel: #ffffff;
+    --border: #dde0d8;
+    --field-border: #555a50;
+    --text: #23261f;
+    --muted: #545a4f;
+    --accent: #2f6b5a;
+    --accent-dark: #214d41;
+    --soft: #e9f2ee;
+    --ng: #b3261e;
+    --locked: #c9cec4;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+  header { background: var(--accent-dark); color: #fff; padding: 24px 20px 18px; text-align: center; }
+  header h1 { margin: 0 0 6px; font-size: 1.35rem; }
+  header p { margin: 0; font-size: .9rem; }
+  main { max-width: 1120px; margin: 0 auto; padding: 22px 16px 50px; }
+  .layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); grid-template-areas: "fmt pv" "photo pv" "design pv" "memo pv"; column-gap: 18px; align-items: start; }
+  .layout > * { min-width: 0; }
+  #fmt-card { grid-area: fmt; } #photo-card { grid-area: photo; } #design-card { grid-area: design; } #memo-card { grid-area: memo; }
+  #pv-card { grid-area: pv; position: sticky; top: 12px; }
+  section.card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; margin-bottom: 18px; }
+  section.card h2 { margin: 0 0 6px; font-size: 1.05rem; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .desc { color: var(--muted); font-size: .88rem; margin: 0 0 12px; }
+  .fine { color: var(--muted); font-size: .86rem; margin: 8px 0 0; }
+  .badge { display: inline-block; font-size: .7rem; padding: 2px 8px; border-radius: 999px; background: #fff1cc; color: #7a5600; font-weight: bold; }
+  .hidden { display: none !important; }
+  label.field, div.field { display: block; margin-bottom: 12px; }
+  .lbl { font-size: .9rem; font-weight: bold; display: block; }
+  .hint { font-size: .875rem; color: var(--muted); font-weight: normal; display: block; margin-top: 2px; }
+  select, input[type=text], textarea { margin-top: 5px; min-height: 44px; border: 1px solid var(--field-border); border-radius: 8px; font-size: 1rem; font-family: inherit; background: #fff; color: var(--text); width: 100%; padding: 8px 10px; }
+  textarea { min-height: 110px; resize: vertical; line-height: 1.5; }
+  input[type=file] { margin-top: 5px; font-size: .9rem; max-width: 100%; min-height: 44px; }
+  input[type=range] { width: 100%; min-height: 44px; accent-color: var(--accent); }
+  .row2, .row3 { display: flex; gap: 12px; }
+  .row2 > *, .row3 > * { flex: 1; min-width: 0; }
+  .chk { display: flex; align-items: center; gap: 8px; min-height: 44px; font-size: .92rem; cursor: pointer; }
+  .chk input { width: 20px; height: 20px; accent-color: var(--accent); flex: none; }
+  .btn-row { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+  .btn { min-height: 44px; min-width: 44px; padding: 9px 16px; border-radius: 8px; font-size: .9rem; cursor: pointer; border: 1px solid var(--field-border); background: #fff; color: var(--text); font-family: inherit; }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: bold; }
+  .btn:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px solid #2560c4; outline-offset: 2px; }
+  .btn-row .btn { flex: 1; }
+  .status { font-size: .88rem; color: var(--muted); margin-top: 6px; min-height: 1.2em; }
+  .status.err { color: var(--ng); font-weight: bold; }
+  .pv { border: 1px solid var(--border); border-radius: 8px; background: #e6e8e2; padding: 12px; display: flex; justify-content: center; }
+  .pv canvas { max-width: 100%; max-height: min(620px, 72vh); width: auto; height: auto; display: block; box-shadow: 0 1px 4px rgba(0,0,0,.25); background: #fff; }
+  .thumbs { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .thumbs button { width: 56px; height: 56px; padding: 0; border: 2px solid #8a8f84; border-radius: 6px; background: #f2f2f2 center/cover no-repeat; cursor: pointer; font-size: .78rem; font-weight: bold; color: #fff; text-shadow: 0 0 3px #000, 0 0 2px #000; display: flex; align-items: flex-end; justify-content: center; line-height: 1.2; padding-bottom: 2px; }
+  .thumbs button:focus-visible { outline: 3px solid #2560c4; outline-offset: 2px; }
+  .thumbs button[aria-pressed="true"] { border-color: var(--accent-dark); box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--accent-dark); }
+  .guide { font-size: .9rem; }
+  .guide h3 { font-size: .95rem; margin: 14px 0 4px; }
+  .guide ul { padding-left: 1.3em; margin: 6px 0; }
+  .guide li { margin: 4px 0; }
+  .locked-panel { border: 1px dashed var(--locked); border-radius: 10px; padding: 16px; text-align: center; color: var(--muted); background: #f8f9f6; }
+  .locked-panel .lead { color: var(--text); font-weight: bold; }
+  .locked-panel .feat-list { text-align: left; max-width: 620px; margin: 10px auto; font-size: .88rem; padding-left: 1.2em; }
+  .buy-btn { display: inline-block; margin-top: 8px; background: var(--accent-dark); color: #fff; font-weight: bold; padding: 11px 22px; border-radius: 999px; text-decoration: none; font-size: .9rem; }
+  footer { max-width: 1120px; margin: 0 auto; padding: 0 16px 40px; font-size: .84rem; color: var(--muted); }
+  footer p { margin: 10px 0; }
+  footer a { color: var(--muted); }
+  #printArea { display: none; }
+  .jump { display: none; margin-top: 6px; font-size: .95rem; padding: 10px 0; }
+  @media (max-width: 860px) {
+    .layout { grid-template-columns: minmax(0, 1fr); grid-template-areas: "fmt" "photo" "design" "pv" "memo"; }
+    #pv-card { position: static; }
+    .jump { display: inline-block; }
+  }
+  @media (max-width: 600px) {
+    .row2, .row3 { flex-direction: column; gap: 0; }
+    section.card { padding: 16px 12px; }
+  }
+  @media print {
+    body.printing > * { display: none !important; }
+    body.printing > #printArea { display: block !important; }
+    #printArea img { display: block; break-after: page; }
+    #printArea img:last-child { break-after: auto; }
+  }
+</style>
+<style id="pageStyle">@page { size: A4 portrait; margin: 0; }</style>
+<!--ANSHIN_CSS_START--><style>:root{--anshin-w:1088px;--anshin-pad:16px}.anshin-strip,.anshin{box-sizing:border-box;width:min(var(--anshin-w),calc(100% - 2 * var(--anshin-pad)));margin-left:auto;margin-right:auto}.anshin-strip{list-style:none;margin-top:10px;margin-bottom:0;padding:0;display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;font-size:.8rem;line-height:1.5}.anshin-strip li{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border:1px solid rgba(20,120,90,.45);border-radius:999px;background:rgba(20,120,90,.07)}.anshin-strip li.anshin-more{border:0;background:none;padding:3px 2px}.anshin-strip a,.anshin a{color:inherit}.anshin{margin-top:18px;margin-bottom:18px;padding:14px 18px;border:1px solid rgba(20,120,90,.45);border-radius:10px;background:rgba(20,120,90,.05);font-size:.86rem;line-height:1.7}.anshin h2{font-size:1rem;margin:0 0 6px}.anshin p{margin:0 0 6px}.anshin ul{margin:0;padding-left:1.2em}.anshin li{margin:3px 0}.anshin details{margin-top:6px}.anshin summary{cursor:pointer;font-weight:bold}.anshin .anshin-meta{margin:8px 0 0;font-size:.8rem;opacity:.85}@media print{.anshin,.anshin-strip{display:none!important}}</style><!--ANSHIN_CSS_END-->
+<!--UPSELL_CSS_START--><style>.upsell-top{box-sizing:border-box;width:min(var(--anshin-w,880px),calc(100% - 2 * var(--anshin-pad,16px)));margin:12px auto 0;font-size:.85rem;line-height:1.6}.upsell-top a{color:inherit}.upsell-assure{list-style:none;margin:12px 0 10px;padding:0;display:flex;flex-wrap:wrap;gap:6px 8px;font-size:.8rem;line-height:1.5}.upsell-assure li{padding:3px 10px;border:1px solid rgba(20,120,90,.45);border-radius:12px;background:rgba(20,120,90,.06)}.upsell-terms{margin:8px 0 0;font-size:.78rem;line-height:1.6;opacity:.85}.upsell-toast{position:fixed;left:50%;bottom:12px;transform:translateX(-50%);z-index:9999;box-sizing:border-box;width:min(520px,calc(100% - 24px));padding:14px 56px 14px 16px;border-radius:12px;background:#fff;color:#222;border:1px solid #c9c2d6;box-shadow:0 6px 24px rgba(0,0,0,.18);font-size:.88rem;line-height:1.6}.upsell-toast p{margin:0 0 6px;font-weight:bold}.upsell-toast ul{margin:0 0 10px;padding-left:1.2em}.upsell-toast li{margin:2px 0}.upsell-toast .upsell-note{display:block;margin-top:6px;font-size:.75rem;color:#555}.upsell-toast .upsell-go{display:inline-flex;align-items:center;min-height:44px;padding:0 18px;border-radius:8px;background:#c9283e;color:#fff;font-weight:bold;text-decoration:none}.upsell-toast .upsell-go:focus-visible,.upsell-toast .upsell-x:focus-visible{outline:3px solid #2560c4;outline-offset:2px}.upsell-toast .upsell-x{position:absolute;top:4px;right:4px;width:44px;height:44px;border:0;border-radius:8px;background:transparent;color:#555;font-size:1.3rem;line-height:1;cursor:pointer}.upsell-inline{white-space:nowrap;color:inherit;text-decoration:underline;text-underline-offset:2px}@media print{.upsell-top,.upsell-assure,.upsell-terms,.upsell-toast,.upsell-inline{display:none!important}}</style><!--UPSELL_CSS_END-->
+</head>
+<body>
+
+<header>
+  <h1>写真カレンダーメーカー</h1>
+  <p>好きな写真を選ぶだけで、写真入りのカレンダーを作れます。2027年の祝日は自動で入ります。壁掛け(A4)・卓上(はがき)・コンビニの写真プリント(L判)・1枚に12か月の年間カレンダーに。写真はどこにも送信しません。登録不要・スマホでも使えます</p>
+</header>
+<!--ANSHIN_STRIP_START-->
+<ul class="anshin-strip" aria-label="データの扱い">
+  <li><span aria-hidden="true">✓</span> 入力内容はこの端末の中だけで処理</li>
+  <li><span aria-hidden="true">✓</span> 登録・ログイン不要</li>
+  <li><span aria-hidden="true">✓</span> 仕組みを公開中</li>
+  <li class="anshin-more"><a href="#anshin">データの扱いをくわしく</a></li>
+</ul>
+<!--ANSHIN_STRIP_END-->
+<!--UPSELL_TOP_START--><p class="upsell-top no-print" id="upsellTop">このページは無料のまま使えます。機能を増やしたい方は <a href="#pro-section">買い切り版(¥100・1回払い)<span aria-hidden="true"> ↓</span></a></p><!--UPSELL_TOP_END-->
+
+<main>
+<div class="layout">
+
+  <section class="card" id="fmt-card">
+    <h2>① 形と月</h2>
+    <label class="field"><span class="lbl">カレンダーの形</span>
+      <select id="inFmt">
+        <option value="A4" selected>壁掛け(A4縦・1か月)</option>
+        <option value="HAGAKI">卓上(はがき縦・1か月)</option>
+        <option value="L">写真プリント用(L判縦・1か月)</option>
+        <option value="YEAR">年間カレンダー(A4縦・1枚に12か月)</option>
+      </select>
+      <span class="hint" id="fmtHint"></span>
+    </label>
+    <div class="row2">
+      <label class="field"><span class="lbl">年</span><select id="inYear"><option>2026</option><option selected>2027</option><option>2028</option></select></label>
+      <label class="field" id="monthField"><span class="lbl">月</span><select id="inMonth"></select></label>
+    </div>
+    <p class="fine" id="freeMonthsNote"></p>
+    
+    <div class="row2">
+      <label class="field"><span class="lbl">週の始まり</span><select id="inWeek"><option value="0" selected>日曜はじまり</option><option value="1">月曜はじまり</option></select></label>
+      <label class="field"><span class="lbl">祝日</span><select id="inHol"><option value="name" selected>赤字+祝日名</option><option value="red">赤字だけ</option><option value="none">入れない</option></select></label>
+    </div>
+    <p class="fine" id="holNote"></p>
+  </section>
+
+  <section class="card" id="photo-card">
+    <h2>② 写真</h2>
+    <label class="field"><span class="lbl" id="photoLbl">写真を選ぶ</span><input type="file" id="inPhoto" accept="image/png,image/jpeg,image/webp,image/gif"><span class="hint" id="photoHint">写真はどこにも送信されません。iPhoneの写真はそのまま選べます(パソコンに移したHEICの写真は、JPEGに変換してから)。縦長の写真は上下が切れるので、下の「縦の位置」で合わせます</span></label>
+    
+    <div class="row3">
+      <label class="field"><span class="lbl">大きさ</span><input type="range" id="inZoom" min="100" max="300" value="100" disabled></label>
+      <label class="field"><span class="lbl">横の位置(左側 ←→ 右側)</span><input type="range" id="inPx" min="-100" max="100" value="0" disabled></label>
+      <label class="field"><span class="lbl">縦の位置(上側 ←→ 下側)</span><input type="range" id="inPy" min="-100" max="100" value="0" disabled></label>
+    </div>
+    <p class="hint" style="margin-top:-6px">写真の向きによっては、大きさを上げると位置を動かせるようになります。</p>
+    <div class="btn-row" style="margin-top:6px"><button type="button" class="btn" id="adjReset" disabled>写真の位置を元に戻す</button></div>
+    <a class="jump" href="#pv-card">見本と印刷へ ↓</a>
+  </section>
+
+  <section class="card" id="design-card">
+    <h2>③ 色と言葉</h2>
+    <div class="row2">
+      <label class="field"><span class="lbl">色</span>
+        <select id="inColor">
+          <option value="#2f6b5a" selected>みどり</option>
+          <option value="#2f5bb7">あお</option>
+          <option value="#c0392b">あか</option>
+          <option value="#d36a8c">ピンク</option>
+          <option value="#b7791f">からし</option>
+          <option value="#6b4f3a">ちゃいろ</option>
+          <option value="#222222">くろ</option>
+        </select>
+      </label>
+      <label class="field"><span class="lbl">文字の形</span>
+        <select id="inFont"><option value="g" selected>ゴシック</option><option value="r">まるい</option><option value="m">明朝</option></select>
+      </label>
+    </div>
+    <label class="field"><span class="lbl">ひとこと(写真の下・空欄でもかまいません)</span><input type="text" id="inCap" maxlength="24" placeholder="例: Happy New Year 2027"></label>
+  </section>
+
+  
+
+  <section class="card" id="pv-card">
+    <h2 id="pvTitle">④ 見本を確かめて印刷</h2>
+    <div class="pv"><canvas id="cv" width="500" height="700" role="img" aria-label="写真カレンダーの見本"></canvas></div>
+    
+    <div class="status" id="outSt" role="status"></div>
+    <div class="btn-row">
+      <button type="button" class="btn primary" id="printBtn">家のプリンターで印刷</button>
+      <button type="button" class="btn" id="pngBtn">画像で保存(コンビニ印刷にも)</button>
+    </div>
+    <p class="fine" id="printHint"></p>
+    <p class="fine" id="creditNote"></p>
+  </section>
+
+</div>
+
+  <section class="card" id="pro-section">
+    <h2>12か月まとめて・月ごとの写真・誕生日 <span class="badge">買い切り版 ¥100(税込)</span></h2>
+    <div class="locked-panel">
+      <p class="lead">家族の写真で、1年分のカレンダーをまとめて。</p>
+      <p>このページの機能は無料でそのまま使えます(1か月ずつ・年間カレンダー)。買い切り版(ダウンロード購入)では、次の機能が増えます:</p>
+      <ul class="feat-list">
+        <li><strong>12か月をまとめて作る</strong>: 選んだ月から12か月分を一度に印刷・保存(画像はZIP)。無料版は1か月ずつ</li>
+        <li><strong>月ごとに写真を変える</strong>: 写真を12枚まで選ぶと、月ごとに違う写真が入ります(位置も月ごとに直せます)</li>
+        <li><strong>誕生日・記念日を入れる</strong>: 「1/15 ゆいの誕生日」のように入れると、その日のマスに小さく入ります(1か月ずつの形のみ。年間カレンダーには入りません)</li>
+        <li><strong>ツール名が入りません</strong>(無料版は用紙の右下に小さく入ります)</li>
+        <li><strong>パソコンで使うHTMLファイルです</strong>(スマホでの動作は保証していません)。ダブルクリックで開くだけ、ネットにつながっていなくても使えます</li>
+      </ul>
+<!--UPSELL_ASSURE_START--><ul class="upsell-assure" aria-label="買い切り版について"><li>¥100(税込)の1回払い・月額なし</li><li>パソコン向けのHTMLファイル(スマホでは開けない機種あり)</li><li>ネットにつながっていなくても動く</li><li>BOOTHで購入(クレジットカード・楽天ペイは手数料なし、コンビニ・銀行払いは別途手数料)</li></ul><!--UPSELL_ASSURE_END-->
+      <a class="buy-btn" href="https://uuhai0625.booth.pm/items/9006691" id="buyLink" target="_blank" rel="noopener">パソコン用の買い切り版を見る(BOOTH・新しいタブ)</a><!--UPSELL_TERMS_START--><p class="upsell-terms">販売者の情報・返品などの販売条件は、BOOTHの商品ページでご確認ください。BOOTHでの購入にはpixivのアカウントが必要です。</p><!--UPSELL_TERMS_END-->
+    </div>
+  </section>
+
+  <section class="card guide" id="guide">
+    <h2>写真カレンダーの作り方</h2>
+    <h3>形の選び方</h3>
+    <ul>
+      <li><strong>壁掛け(A4縦)</strong>: 家のプリンターでA4に。上半分が写真、下半分がカレンダーです。12枚を重ねて上をとじれば壁掛けカレンダーになります。</li>
+      <li><strong>卓上(はがき縦)</strong>: はがきの大きさ(100×148mm)。厚めのはがき用紙に印刷して、カードスタンドや小さな写真立てに。</li>
+      <li><strong>写真プリント用(L判縦)</strong>: 「画像で保存」して、コンビニやお店の写真プリント(L判)で。L判の写真立てに入ります。</li>
+      <li><strong>年間カレンダー(A4縦)</strong>: 写真1枚と12か月を1枚に。はじめの月を4月にすれば、4月〜翌年3月の年度カレンダーになります。</li>
+    </ul>
+    <h3>よくある質問</h3>
+    <ul>
+      <li><strong>祝日は入っている?</strong> 2026年・2027年の祝日(振替休日・国民の休日を含む)は、内閣府「国民の祝日について」の一覧どおりに入っています(2026年10月確認)。2028年の祝日は、内閣府の公表後にこのページに追加する予定です。祝日は法律の改正などで変わることがあるので、大事な予定は内閣府の一覧でご確認ください。</li>
+      <li><strong>写真の向きが横になる?</strong> スマホの写真は、多くのブラウザで正しい向きに直して表示されます。横になってしまうときは、写真アプリで一度回転して保存してから選んでください。</li>
+      <li><strong>コンビニでL判に印刷すると端が切れる?</strong> 写真プリントは「フチなし」だと、少し拡大されて端が1〜2mmほど切れることがあります。このツールの画像は外側によゆうを持たせてありますが、気になるときは印刷前の画面で確かめるか、「フチあり」「全体を表示」などの設定があればそちらを選んでください。まず1枚試してみるのがおすすめです。</li>
+      <li><strong>どんな写真を使っていい?</strong> 自分で撮った写真や、使ってよいと許可された写真を使ってください。キャラクターや公式の画像、ほかの人が撮った写真を使ったカレンダーは、自分や家族で楽しむ範囲にとどめ、配ったり売ったりSNSに載せたりしないでください。お店の写真プリントでは、キャラクターなどが写った画像の印刷を断られることがあります。</li>
+      <li><strong>SNSに載せてもいい?</strong> 保存した画像には、撮影場所などの情報(Exif)は入りません。ただ、お子さんの顔・名前・誕生日がそろった画像は、個人が特定されやすくなります。公開するときは名前や記念日を入れない、住所や学校が分かるものが写っていないか確かめる、などご注意ください。写っている人の了承も得てください。</li>
+      <li><strong>選んだ写真はどこかに送られる?</strong> 送られません。すべてこのブラウザの中で処理します。</li>
+    </ul>
+  </section>
+
+</main>
+
+<!--ANSHIN_START-->
+<section class="anshin" id="anshin" aria-labelledby="anshin-title">
+  <h2 id="anshin-title">データの扱いについて</h2>
+  <p>このページには、入力した内容を受け取る仕組みがありません。文字も画像も、あなたのスマホやパソコンの中だけで処理されます。</p>
+  <ul>
+    <li>画像などのファイルを選んでも、アップロードはされません。端末の中で読み込んで処理します。</li>
+    <li>会員登録・ログイン・メールアドレスの入力はありません。</li>
+    <li>自分で確かめたい方へ: ページを開いたあと機内モードにしても、そのまま使えます。</li>
+  </ul>
+  <details>
+    <summary>もっとくわしく(保存・アクセス解析・公開について)</summary>
+    <ul>
+      <li>保存されるデータは、この端末のこのブラウザの中にだけ残ります(localStorage・sessionStorage)。共用のパソコンでは使い終わったら消してください。</li>
+      <li>アクセス解析(Google Analytics)のため、見たページのURL・参照元・端末やブラウザの種類・おおよその地域(IPアドレスから推定)・Cookieの識別子・BOOTHへのリンクのクリック・どのボタンを押したか(回数や選んだ設定を含む)がGoogleに送られます。目的は利用状況の把握です。入力した文字や画像は送りません。(<a href="https://policies.google.com/technologies/partner-sites?hl=ja" target="_blank" rel="noopener">Googleによるデータの使用</a>/<a href="https://tools.google.com/dlpage/gaoptout?hl=ja" target="_blank" rel="noopener">計測を止めるアドオン</a>。止めてもツールはそのまま使えます)</li>
+      <li>このツールの結果や作成物は目安です。入稿・契約・販売などの前には、印刷所や公式の情報でご確認ください。</li>
+      <li>処理の中身はすべて公開しています(詳しい方向け: <a href="https://github.com/uuhai0625/photo-calendar-maker" target="_blank" rel="noopener">GitHub</a>)。</li>
+    </ul>
+  </details>
+  <p class="anshin-meta">作っている人: ウーハイ(個人開発)/不具合・ご質問は<a href="https://x.com/uuhai0625" target="_blank" rel="noopener">X(@uuhai0625)</a>へ/<a href="https://uuhai0625.github.io/" target="_blank" rel="noopener">ほかのツール</a>/この説明の更新日: 2026-10-13</p>
+</section>
+<!--ANSHIN_END-->
+
+<footer>
+  <p id="privacyNote">入力した内容や写真はどこにも送信されません(すべてこのブラウザの中で処理します)。</p>
+  <p><a href="https://uuhai0625.booth.pm/" target="_blank" rel="noopener">他のツールも見る(BOOTHショップ)</a></p>
+  <p>不具合・ご要望は X <a href="https://x.com/uuhai0625" target="_blank" rel="noopener">@uuhai0625</a> まで。</p>
+  <p class="related-tools no-print">関連する無料ツール: <a href="https://uuhai0625.github.io/eigyobi-calendar/" target="_blank" rel="noopener">営業日カレンダー</a> ・ <a href="https://uuhai0625.github.io/instant-photo-card/" target="_blank" rel="noopener">インスタント写真風カードメーカー</a> ・ <a href="https://uuhai0625.github.io/pochibukuro-template/" target="_blank" rel="noopener">ポチ袋テンプレートメーカー</a> ・ <a href="https://uuhai0625.github.io/#free-tools">ツール一覧</a></p>
+</footer>
+
+<div id="printArea"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  var EDITION = "free"; // "full" で買い切り完全版
+
+  function track(name, params) {
+    if (!window.dataLayer) return;
+    (function () { window.dataLayer.push(arguments); })("event", name, params || {});
+  }
+  var $ = function (id) { return document.getElementById(id); };
+  function setSt(id, msg, err) { var e = $(id); if (!e) return; e.textContent = msg; e.classList.toggle("err", !!err); }
+  function checked(id) { var e = $(id); return !!(e && e.checked); }
+  function val(id) { var e = $(id); return e ? e.value.trim() : ""; }
+
+  var CREDIT = true;
+  
+  // 祝日(内閣府「国民の祝日について」の一覧より。振替休日・国民の休日を含む)
+  var HOL = {"2026-01-01":"元日","2026-01-12":"成人の日","2026-02-11":"建国記念の日","2026-02-23":"天皇誕生日","2026-03-20":"春分の日","2026-04-29":"昭和の日","2026-05-03":"憲法記念日","2026-05-04":"みどりの日","2026-05-05":"こどもの日","2026-05-06":"振替休日","2026-07-20":"海の日","2026-08-11":"山の日","2026-09-21":"敬老の日","2026-09-22":"国民の休日","2026-09-23":"秋分の日","2026-10-12":"スポーツの日","2026-11-03":"文化の日","2026-11-23":"勤労感謝の日","2027-01-01":"元日","2027-01-11":"成人の日","2027-02-11":"建国記念の日","2027-02-23":"天皇誕生日","2027-03-21":"春分の日","2027-03-22":"振替休日","2027-04-29":"昭和の日","2027-05-03":"憲法記念日","2027-05-04":"みどりの日","2027-05-05":"こどもの日","2027-07-19":"海の日","2027-08-11":"山の日","2027-09-20":"敬老の日","2027-09-23":"秋分の日","2027-10-11":"スポーツの日","2027-11-03":"文化の日","2027-11-23":"勤労感謝の日"};
+  var HOL_FIRST = 2026, HOL_LAST = 2027;
+  var FMTS = {
+    A4: { W: 210, H: 297, name: "A4縦", hint: "A4に1か月。上半分が写真、下半分がカレンダーです。" },
+    HAGAKI: { W: 100, H: 148, name: "はがき縦", hint: "はがき(100×148mm)に1か月。卓上のカードスタンドに。" },
+    L: { W: 89, H: 127, name: "L判縦", hint: "L判(89×127mm)に1か月。「画像で保存」して写真プリントに。" },
+    YEAR: { W: 210, H: 297, name: "年間A4縦", hint: "A4に写真1枚と12か月。", year: true }
+  };
+  var EN = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  var WD = ["日", "月", "火", "水", "木", "金", "土"];
+  var FONTS = {
+    g: '"Yu Gothic", "YuGothic", "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif',
+    r: '"Hiragino Maru Gothic ProN", "HG丸ｺﾞｼｯｸM-PRO", "Yu Gothic", "Meiryo", sans-serif',
+    m: '"Yu Mincho", "YuMincho", "Hiragino Mincho ProN", serif'
+  };
+  for (var mi = 1; mi <= 12; mi++) { var o = document.createElement("option"); o.value = mi; o.textContent = mi + "月"; $("inMonth").appendChild(o); }
+  $("inMonth").value = "1";
+
+  function pad(n) { return (n < 10 ? "0" : "") + n; }
+  function holName(y, m, d) { return HOL[y + "-" + pad(m) + "-" + pad(d)] || ""; }
+  var memoBad = 0;
+  function memoMap() {
+    var mp = {}; memoBad = 0;
+    if (!$("inMemo")) return mp;
+    $("inMemo").value.split(/\r?\n/).forEach(function (l) {
+      var mt = l.normalize("NFKC").trim().match(/^(\d{1,2})\s*[\/／月.\-]\s*(\d{1,2})\s*日?\s*(.*)$/);
+      if (!mt) { if (l.trim()) memoBad++; return; }
+      var m = +mt[1], d = +mt[2], t = Array.from(mt[3].trim()).slice(0, 12).join("");
+      if (m >= 1 && m <= 12 && d >= 1 && d <= new Date(2028, m, 0).getDate() && t) mp[m + "-" + d] = mp[m + "-" + d] || t; else memoBad++;
+    });
+    return mp;
+  }
+
+  // ===== 写真 =====
+  var photos = [];      // 月ごと(無料版は [0] だけ)
+  var single = null;    // 写真を選ぶ欄の1枚
+  var cur = 0;          // 位置を直している写真
+  // 12か月まとめてのときは月ごと、1か月だけ・年間のときは押した写真
+  function photoFor(i, C) {
+    if (EDITION === "full" && photos.length) return C && C.months > 1 ? photos[i % photos.length] : photos[cur >= 0 && photos[cur] ? cur : 0];
+    return single;
+  }
+  function adjOf(p) { return p ? p.adj : { z: 100, x: 0, y: 0 }; }
+  function loadImg(file) {
+    return new Promise(function (res, rej) {
+      var u = URL.createObjectURL(file), im = new Image();
+      im.onload = function () { if (!im.naturalWidth) { URL.revokeObjectURL(u); rej(new Error("size")); return; } res({ img: im, url: u, adj: { z: 100, x: 0, y: 0 } }); };
+      im.onerror = function () { URL.revokeObjectURL(u); rej(new Error("img")); };
+      im.src = u;
+    });
+  }
+  var loadSeq = 0, loadSeqMany = 0;
+  $("inPhoto").addEventListener("change", function () {
+    var f = this.files && this.files[0], el = this, seq = ++loadSeq;
+    if (!f) return;
+    loadImg(f).then(function (p) {
+      if (seq !== loadSeq) { URL.revokeObjectURL(p.url); return; }
+      if (single) URL.revokeObjectURL(single.url);
+      single = p;
+      var hadMany = photos.length;
+      if (hadMany) { photos.forEach(function (q) { URL.revokeObjectURL(q.url); }); photos = []; if ($("inPhotos")) $("inPhotos").value = ""; buildThumbs(); }
+      cur = -1; syncSliders(); refresh(); setSt("outSt", hadMany ? "全部の月に、この写真を使います(月ごとの写真ははずしました)。" : "");
+    }, function () { el.value = ""; setSt("outSt", "写真を読み込めませんでした(JPEG・PNGなどを選んでください)。", true); });
+  });
+  if ($("inPhotos")) $("inPhotos").addEventListener("change", function () {
+    var fs = Array.from(this.files || []).slice(0, 12), el = this, seq = ++loadSeqMany;
+    if (!fs.length) return;
+    setSt("outSt", "写真を読み込んでいます…");
+    Promise.all(fs.map(function (f) { return loadImg(f).catch(function () { return null; }); })).then(function (ps) {
+      if (seq !== loadSeqMany) { ps.forEach(function (p) { if (p) URL.revokeObjectURL(p.url); }); return; }
+      photos.forEach(function (p) { URL.revokeObjectURL(p.url); });
+      var bad = ps.filter(function (p) { return !p; }).length;
+      photos = ps.filter(Boolean); cur = 0;
+      buildThumbs(); syncSliders(); refresh();
+      setSt("outSt", photos.length + "枚の写真を入れました。" + (bad ? bad + "枚は読み込めませんでした。" : "") + (photos.length && photos.length < 12 ? "12か月まとめて作るとき、足りない月ははじめの写真からくり返します。" : ""), !!bad);
+      if (!photos.length) el.value = "";
+    });
+  });
+  function thumbLabel(i) {
+    var C = conf(), n = photos.length, ms = [];
+    if (C.months < 2) return (i + 1) + "枚目";
+    for (var j = i; j < 12; j += n) ms.push((C.startM - 1 + j) % 12 + 1);
+    return ms.join("・") + "月";
+  }
+  function markThumbs() {
+    var box = $("thumbs"); if (!box) return;
+    Array.prototype.forEach.call(box.children, function (b, i) { b.setAttribute("aria-pressed", i === cur ? "true" : "false"); b.textContent = thumbLabel(i); b.setAttribute("aria-label", thumbLabel(i) + "の写真(押すと位置を直せます)"); });
+  }
+  function buildThumbs() {
+    var box = $("thumbs"); if (!box) return;
+    box.textContent = "";
+    photos.forEach(function (p, i) {
+      var b = document.createElement("button"); b.type = "button"; b.style.backgroundImage = "url(" + p.url + ")";
+      b.addEventListener("click", function () {
+        cur = i;
+        if ($("inPvMonth") && conf().months > 1) { var j = i; $("inPvMonth").value = String(j); }
+        markThumbs(); syncSliders(); refresh();
+      });
+      box.appendChild(b);
+    });
+    markThumbs();
+  }
+  function curPhoto() { return EDITION === "full" && photos.length ? photos[cur >= 0 && photos[cur] ? cur : 0] : single; }
+  function vt() {
+    var x = +$("inPx").value, y = +$("inPy").value;
+    $("inZoom").setAttribute("aria-valuetext", $("inZoom").value + "%");
+    $("inPx").setAttribute("aria-valuetext", x === 0 ? "中央" : x < 0 ? "左寄り " + (-x) : "右寄り " + x);
+    $("inPy").setAttribute("aria-valuetext", y === 0 ? "中央" : y < 0 ? "上寄り " + (-y) : "下寄り " + y);
+  }
+  function syncSliders() {
+    var p = curPhoto(), a = adjOf(p);
+    $("inZoom").value = a.z; $("inPx").value = a.x; $("inPy").value = a.y;
+    ["inZoom", "inPx", "inPy", "adjReset"].forEach(function (id) { $(id).disabled = !p; });
+    vt();
+  }
+  $("adjReset").addEventListener("click", function () { var p = curPhoto(); if (!p) return; p.adj = { z: 100, x: 0, y: 0 }; syncSliders(); refresh(); });
+  ["inZoom", "inPx", "inPy"].forEach(function (id) {
+    $(id).addEventListener("input", function () {
+      var p = curPhoto(); if (!p) return;
+      p.adj = { z: +$("inZoom").value, x: +$("inPx").value, y: +$("inPy").value }; vt(); later();
+    });
+  });
+
+  // ===== 描画 =====
+  function drawPhoto(ctx, p, x, y, w, h, color) {
+    ctx.save(); ctx.beginPath(); ctx.rect(x, y, w, h); ctx.clip();
+    if (!p) {
+      ctx.fillStyle = "#eef0eb"; ctx.fillRect(x, y, w, h);
+      ctx.fillStyle = "#9aa095"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.font = (Math.min(w, h) * 0.07) + "px " + FONTS.g;
+      ctx.fillText("ここに写真が入ります", x + w / 2, y + h / 2);
+    } else {
+      var im = p.img, a = p.adj, base = Math.max(w / im.naturalWidth, h / im.naturalHeight) * a.z / 100;
+      var dw = im.naturalWidth * base, dh = im.naturalHeight * base, ox = (dw - w) / 2, oy = (dh - h) / 2;
+      ctx.drawImage(im, x - ox - ox * a.x / 100, y - oy - oy * a.y / 100, dw, dh);
+    }
+    ctx.restore();
+  }
+  function monthGrid(ctx, x, y, w, h, Y, M, C, k, big, showYear) {
+    var first = new Date(Y, M - 1, 1).getDay(), days = new Date(Y, M, 0).getDate(), ws = C.week;
+    var lead = (first - ws + 7) % 7, rows = Math.ceil((lead + days) / 7), font = C.font, color = C.color, memo = C.memo;
+    var headH = big ? h * 0.2 : h * 0.17, wdH = big ? h * 0.07 : h * 0.1, cellW = w / 7, cellH = (h - headH - wdH) / rows;
+    // 見出し
+    ctx.textBaseline = "alphabetic";
+    if (big) {
+      ctx.fillStyle = color; ctx.textAlign = "left"; ctx.font = "bold " + (headH * 0.78) + "px " + font; ctx.fillText(M, x + 1 * k, y + headH * 0.82);
+      var mw = ctx.measureText(String(M)).width;
+      ctx.font = "bold " + (headH * 0.26) + "px " + font; ctx.fillText(EN[M - 1], x + mw + 4 * k, y + headH * 0.5);
+      ctx.fillStyle = "#666"; ctx.font = (headH * 0.22) + "px " + font; ctx.fillText(String(Y), x + mw + 4 * k, y + headH * 0.8);
+    } else {
+      ctx.fillStyle = color; ctx.textAlign = "left"; ctx.font = "bold " + (headH * 0.72) + "px " + font; ctx.fillText((showYear ? Y + "年" : "") + M + "月", x + 0.5 * k, y + headH * 0.8);
+    }
+    // 曜日
+    ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.font = "bold " + (wdH * 0.55) + "px " + font;
+    for (var c = 0; c < 7; c++) {
+      var wd = (c + ws) % 7;
+      ctx.fillStyle = wd === 0 ? "#c62828" : wd === 6 ? "#1f5fbf" : "#444";
+      ctx.fillText(WD[wd], x + cellW * (c + 0.5), y + headH + wdH / 2);
+    }
+    ctx.strokeStyle = color; ctx.lineWidth = Math.max(1, (big ? 0.35 : 0.2) * k);
+    ctx.beginPath(); ctx.moveTo(x, y + headH + wdH); ctx.lineTo(x + w, y + headH + wdH); ctx.stroke();
+    // 日付
+    for (var d = 1; d <= days; d++) {
+      var i = lead + d - 1, r = Math.floor(i / 7), cc = i % 7, wd2 = (cc + ws) % 7;
+      var cx = x + cellW * (cc + 0.5), cy = y + headH + wdH + cellH * r, hn = C.hol !== "none" ? holName(Y, M, d) : "";
+      var red = wd2 === 0 || !!hn, blue = wd2 === 6 && !hn;
+      ctx.fillStyle = red ? "#c62828" : blue ? "#1f5fbf" : "#222";
+      var fs = Math.min(cellH * (big ? 0.42 : 0.62), cellW * 0.5);
+      ctx.font = (big || red ? "bold " : "") + fs + "px " + font; ctx.textBaseline = "top";
+      ctx.fillText(d, cx, cy + cellH * (big ? 0.08 : 0.12));
+      if (big) {
+        // 祝日名・記念日(小さい用紙でも消さない。入らないときは記念日を優先して1行)
+        var small = Math.max(Math.min(cellH * 0.17, cellW * 0.15), 1.5 * k), room = cellH * 0.42, maxLines = Math.max(1, Math.floor(room / (small * 1.15)));
+        var hnShort = cellW < 15 * k ? hn.replace("振替休日", "振休").replace("国民の休日", "休日").replace("建国記念の日", "建国記念日") : hn;
+        var items = [[memo[M + "-" + d] || "", "#333"], [hn && C.hol === "name" ? hnShort : "", "#c62828"]].filter(function (t) { return t[0]; }).slice(0, maxLines);
+        if (items.length > 1) items.reverse();
+        ctx.save(); ctx.beginPath(); ctx.rect(x + cellW * cc, cy, cellW, cellH); ctx.clip();
+        items.forEach(function (t, line) {
+          var sz = small; ctx.font = "bold " + sz + "px " + font;
+          while (sz > 1.4 * k && ctx.measureText(t[0]).width > cellW * 0.94) { sz *= 0.92; ctx.font = "bold " + sz + "px " + font; }
+          ctx.fillStyle = t[1]; ctx.fillText(t[0], cx, cy + cellH * 0.56 + line * small * 1.15);
+        });
+        ctx.restore();
+      }
+      if (big && r > 0) { ctx.strokeStyle = "rgba(0,0,0,.12)"; ctx.lineWidth = Math.max(1, 0.15 * k); ctx.beginPath(); ctx.moveTo(x + cellW * cc + 1 * k, cy); ctx.lineTo(x + cellW * (cc + 1) - 1 * k, cy); ctx.stroke(); }
+    }
+  }
+  function renderPage(C, idx, dpi) {
+    var F = C.F, k = dpi / 25.4, cv = document.createElement("canvas");
+    cv.width = Math.round(F.W * k); cv.height = Math.round(F.H * k);
+    var ctx = cv.getContext("2d"); if (!ctx) return null;
+    ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, cv.width, cv.height);
+    var W = F.W, H = F.H, m = Math.max(5, W * 0.06);
+    if (F.year) {
+      var ph = H * 0.36;
+      drawPhoto(ctx, photoFor(0, C), m * k, m * k, (W - 2 * m) * k, ph * k, C.color);
+      var ty = m + ph + 4;
+      var ttl = C.startM === 1 ? String(C.startY) : C.startY + "." + C.startM + " – " + (C.startY + 1) + "." + (C.startM - 1);
+      ctx.fillStyle = C.color; ctx.textAlign = "left"; ctx.textBaseline = "top"; ctx.font = "bold " + (9 * k) + "px " + C.font; ctx.fillText(ttl, m * k, ty * k);
+      if (C.cap) { ctx.fillStyle = "#444"; ctx.textAlign = "right"; ctx.font = (4.2 * k) + "px " + C.font; ctx.fillText(C.cap, (W - m) * k, (ty + 3.5) * k); }
+      var gy = ty + 13, gh = H - m - gy - 4, cols = 3, rows = 4, gw = (W - 2 * m), cw = gw / cols, chh = gh / rows;
+      for (var i = 0; i < 12; i++) {
+        var ym = C.startY + Math.floor((C.startM - 1 + i) / 12), mm = (C.startM - 1 + i) % 12 + 1;
+        monthGrid(ctx, (m + (i % cols) * cw + 3) * k, (gy + Math.floor(i / cols) * chh + 1) * k, (cw - 6) * k, (chh - 3) * k, ym, mm, C, k, false, mm === 1 && i > 0);
+      }
+    } else {
+      var Y = C.startY + Math.floor((C.startM - 1 + idx) / 12), M = (C.startM - 1 + idx) % 12 + 1;
+      var phH = (H - 2 * m) * 0.5;
+      drawPhoto(ctx, photoFor(idx, C), m * k, m * k, (W - 2 * m) * k, phH * k, C.color);
+      var capH = C.cap ? Math.max(5, H * 0.04) : 1.5;
+      if (C.cap) { ctx.fillStyle = "#444"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; var cs = H * 0.022 * k; ctx.font = cs + "px " + C.font; while (cs > 4 && ctx.measureText(C.cap).width > (W - 2 * m) * k) { cs *= 0.93; ctx.font = cs + "px " + C.font; } ctx.fillText(C.cap, W / 2 * k, (m + phH + capH / 2 + 1) * k); }
+      var gy2 = m + phH + capH + 2;
+      monthGrid(ctx, m * k, gy2 * k, (W - 2 * m) * k, (H - m - gy2 - (CREDIT ? 2.5 : 0)) * k, Y, M, C, k, true);
+    }
+    if (CREDIT) { ctx.fillStyle = "rgba(0,0,0,.35)"; ctx.font = (Math.min(2.2, W * 0.018) * k) + "px sans-serif"; ctx.textAlign = "right"; ctx.textBaseline = "alphabetic"; ctx.fillText("写真カレンダーメーカー", (W - m * 0.6) * k, (H - Math.max(3.2, m * 0.6)) * k); }
+    return cv;
+  }
+
+  // ===== 設定 =====
+  function conf() {
+    var F = FMTS[$("inFmt").value] || FMTS.A4, all = EDITION === "full" && checked("inAll") && !F.year;
+    return { F: F, fmtKey: $("inFmt").value, startY: +$("inYear").value, startM: +$("inMonth").value, week: +$("inWeek").value, hol: $("inHol").value,
+      color: $("inColor").value, font: FONTS[$("inFont").value] || FONTS.g, cap: val("inCap"), memo: memoMap(), months: F.year ? 1 : (all ? 12 : 1) };
+  }
+
+  // ===== 見本 =====
+  var cv = $("cv"), timer = null;
+  function refresh() {
+    var C = conf(), pvIdx = $("inPvMonth") && C.months > 1 ? +$("inPvMonth").value || 0 : 0;
+    $("pvTitle").textContent = ($("memo-card") ? "⑤" : "④") + " 見本を確かめて印刷";
+    var r = renderPage(C, pvIdx, C.F.W > 150 ? 50 : 110);
+    if (r) { cv.width = r.width; cv.height = r.height; cv.getContext("2d").drawImage(r, 0, 0); r.width = r.height = 0; }
+    $("fmtHint").textContent = C.F.hint + (C.F.year ? "はじめの月を4月にすると、年度カレンダー(4月〜翌年3月)になります。" : "");
+    $("freeMonthsNote").textContent = EDITION !== "full" && !C.F.year ? "12か月作るときは、月を変えて1か月ずつ印刷・保存してください(写真と位置はそのまま残ります)。" : "";
+    if ($("memoNote") && $("inMemo")) $("memoNote").textContent = "その日のマスに小さく入ります(毎年同じ日・1日に1つ・12文字まで)。1か月ずつの形だけで、年間カレンダーには入りません" + (memoBad ? "。読み取れなかった行が" + memoBad + "つあります(「1/15 名前」の形で)" : "");
+    markThumbs();
+    var lastY = C.startY + Math.floor((C.startM - 1 + (C.F.year ? 11 : C.months - 1)) / 12);
+    $("holNote").textContent = lastY > HOL_LAST ? "祝日が入っているのは2026年・2027年だけです(2028年の祝日は内閣府の公表後に追加予定)。" : "祝日は内閣府の公表どおり(2026年・2027年)。法律の改正などで変わることがあります。";
+    $("printHint").textContent = C.fmtKey === "L" ? "L判はコンビニやお店の写真プリントがおすすめ。「画像で保存」して、L判で印刷します(フチなしだと端が1〜2mm切れることがあります)。" : C.fmtKey === "HAGAKI" ? "家のプリンターで、はがき用紙に倍率「100%」で印刷します。" : "A4の紙に、倍率「100%」(「用紙に合わせる」はオフ)で印刷します。";
+    if ($("inPvMonth")) {
+      $("pvMonthField").classList.toggle("hidden", C.months < 2);
+      var opts = []; for (var i = 0; i < 12; i++) { var y = C.startY + Math.floor((C.startM - 1 + i) / 12), m = (C.startM - 1 + i) % 12 + 1; opts.push(y + "年" + m + "月"); }
+      var sel = $("inPvMonth"), keep = sel.value;
+      if (sel.options.length !== 12 || sel.options[0].textContent !== opts[0]) { sel.textContent = ""; opts.forEach(function (t, i) { var o = document.createElement("option"); o.value = i; o.textContent = t; sel.appendChild(o); }); sel.value = keep || "0"; }
+    }
+    if ($("allRow")) $("allRow").classList.toggle("hidden", !!C.F.year);
+    $("monthField").querySelector(".lbl").textContent = C.F.year ? "はじめの月" : (C.months > 1 ? "はじめの月" : "月");
+    cv.setAttribute("aria-label", "写真カレンダーの見本(" + C.F.name + "・" + C.startY + "年" + C.startM + "月" + (C.F.year ? "から12か月" : "") + ")");
+    $("creditNote").textContent = EDITION === "full" ? "" : "無料版は、用紙の右下に小さくツール名が入ります。";
+  }
+  function later() { clearTimeout(timer); timer = setTimeout(refresh, 120); }
+  ["inFmt", "inYear", "inMonth", "inWeek", "inHol", "inColor", "inFont", "inAll"].forEach(function (id) { if ($(id)) $(id).addEventListener("change", refresh); });
+  ["inCap", "inMemo"].forEach(function (id) { if ($(id)) $(id).addEventListener("input", later); });
+  if ($("inPvMonth")) $("inPvMonth").addEventListener("change", function () { if (photos.length) cur = +this.value % photos.length; markThumbs(); syncSliders(); refresh(); });
+
+  // ===== 印刷・保存 =====
+  function toBlob(c) { return new Promise(function (res) { c.toBlob(function (b) { res(b); }, "image/png"); }); }
+  function download(blob, name) {
+    var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000);
+  }
+  function renderAll(C, dpi) {
+    var out = [], p = Promise.resolve();
+    for (var i = 0; i < C.months; i++) (function (i) {
+      p = p.then(function () { var c = renderPage(C, i, dpi); if (!c) throw new Error("canvas"); return toBlob(c).then(function (b) { c.width = c.height = 0; if (!b) throw new Error("blob"); out.push(b); }); });
+    })(i);
+    return p.then(function () { return out; });
+  }
+  function noPhoto(C) { return !single && !(EDITION === "full" && photos.length); }
+  var busy = false, printUrls = [];
+  function clearPrint() { printUrls.forEach(function (u) { URL.revokeObjectURL(u); }); printUrls = []; $("printArea").textContent = ""; document.body.classList.remove("printing"); }
+  $("printBtn").addEventListener("click", function () {
+    if (busy) return;
+    var C = conf();
+    if (noPhoto(C)) { setSt("outSt", "先に②で写真を選んでください。", true); return; }
+    busy = true; clearPrint();
+    $("pageStyle").textContent = "@page { size: " + C.F.W + "mm " + C.F.H + "mm; margin: 0; }";
+    setSt("outSt", "印刷用の画像を作っています…");
+    renderAll(C, C.months > 4 ? 200 : 300).then(function (blobs) {
+      return Promise.all(blobs.map(function (b) {
+        return new Promise(function (res, rej) { var u = URL.createObjectURL(b), im = new Image(); printUrls.push(u); im.style.width = (C.F.W - 0.3) + "mm"; im.style.height = (C.F.H - 0.3) + "mm"; im.onload = res; im.onerror = function () { rej(new Error("img")); }; im.alt = ""; im.src = u; $("printArea").appendChild(im); });
+      })).then(function () { return blobs.length; });
+    }).then(function (n) {
+      document.body.classList.add("printing");
+      setSt("outSt", "印刷画面を開きました(" + C.F.name + "・" + n + "枚)。倍率は「100%」がおすすめです。");
+      track("photocal_print", { fmt: C.fmtKey, months: n });
+      setTimeout(function () { window.print(); }, 50);
+    }).catch(function () { clearPrint(); setSt("outSt", "印刷用の画像を作れませんでした。", true); }).then(function () { busy = false; });
+  });
+  window.addEventListener("afterprint", function () { setTimeout(clearPrint, 300); });
+  var saveMany = function (blobs, base) { download(blobs[0], base + ".png"); return Promise.resolve(); };
+  
+  $("pngBtn").addEventListener("click", function () {
+    if (busy) return;
+    var C = conf();
+    if (noPhoto(C)) { setSt("outSt", "先に②で写真を選んでください。", true); return; }
+    busy = true;
+    var base = "カレンダー_" + C.startY + "年" + C.startM + "月" + (C.months > 1 ? "から12か月" : "") + "_" + C.F.name;
+    setSt("outSt", "画像を作っています…");
+    renderAll(C, 300).then(function (blobs) {
+      var phone = window.matchMedia && matchMedia("(pointer:coarse)").matches, file = null;
+      track("photocal_save", { fmt: C.fmtKey, months: blobs.length });
+      if (blobs.length === 1) { try { file = new File([blobs[0]], base + ".png", { type: "image/png" }); } catch (e) {} }
+      if (phone && file && navigator.canShare && navigator.canShare({ files: [file] })) {
+        return navigator.share({ files: [file] }).then(function () { setSt("outSt", "共有メニューから「画像を保存」を選ぶと、写真に入ります。"); }, function (err) {
+          if (err && err.name === "AbortError") { setSt("outSt", "共有をやめました。もう一度押すと保存できます。"); return; }
+          download(blobs[0], base + ".png"); setSt("outSt", "画像を保存しました。");
+        });
+      }
+      return saveMany(blobs, base).then(function () {
+        setSt("outSt", blobs.length > 1 ? blobs.length + "か月分の画像をZIPで保存しました。" : "画像(" + C.F.name + "・300dpi)を保存しました。" + (C.fmtKey === "L" ? "写真プリントはL判で(フチなしだと端が少し切れることがあります)。" : "") + "iPhoneでは「ファイル」に入ることがあります。");
+      });
+    }).catch(function () { setSt("outSt", "画像を作れませんでした。", true); }).then(function () { busy = false; });
+  });
+
+  if (EDITION === "full") $("pro-section").classList.add("hidden");
+  if (EDITION !== "full") {
+    $("privacyNote").innerHTML = '入力した内容や写真はどこにも送信されません(すべてこのブラウザの中で処理します)。このページでは利用状況の把握のためにアクセス解析(Google Analytics)を使っています(入力した内容は含みません)。<a href="https://policies.google.com/technologies/partner-sites?hl=ja" target="_blank" rel="noopener">Googleによるデータの使用について</a>';
+  }
+  refresh();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(refresh);
+})();
+</script>
+<!--UPSELL_JS_START-->
+<script>
+(function () {
+  "use strict";
+  var q = new URLSearchParams(location.search);
+  if (q.get("obs") === "1" || document.documentElement.classList.contains("obs")) return;
+  // 小さな案内(トースト)は、買い切り版がパソコン向けなので、マウス操作の広い画面でだけ出す
+  var pc = !!(window.matchMedia && matchMedia("(pointer:fine) and (min-width:720px)").matches);
+  var buy = document.getElementById("buyLink");
+  var pro = document.getElementById("pro-section");
+  if (!buy || !pro) return;
+  var FEATS = [];
+  var path = location.pathname.replace(/index\.html$/, "");
+  var KEY_CLOSED = "upsell_closed_until:" + path, KEY_SHOWN = "upsell_shown:" + path;
+  function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } }
+  function sess(k, v) { try { if (v === undefined) return sessionStorage.getItem(k); sessionStorage.setItem(k, v); } catch (e) { return null; } }
+  function gtagEv(name, p) { if (!window.dataLayer) return; (function () { window.dataLayer.push(arguments); })("event", name, p || {}); }
+
+  var shown = false;
+  function blocked() {
+    if (shown || sess(KEY_SHOWN) === "1") return true;
+    var until = Number(store(KEY_CLOSED) || 0);
+    return until && Date.now() < until;
+  }
+  function feats() {
+    if (FEATS.length) return FEATS;
+    var out = [];
+    var lis = pro.querySelectorAll(".feat-list li");
+    for (var i = 0; i < lis.length && out.length < 3; i++) {
+      var all = lis[i].textContent.replace(/\s+/g, " ").trim();
+      if (/スマホ|HTMLファイル|パソコンで使う/.test(all)) continue;
+      var st = lis[i].querySelectorAll("strong");
+      var t = st.length === 1 ? st[0].textContent : all.split(/[::。]/)[0];
+      t = t.replace(/[((][^()()]*[))]/g, "").replace(/\s+/g, " ").trim();
+      if (t.length > 40) t = t.slice(0, 39) + "…";
+      if (t) out.push(t);
+    }
+    return out;
+  }
+  // 「〜してください」「できません」など、失敗の表示が出ていたら案内しない
+  function failed() {
+    var els = document.querySelectorAll('[role="status"], [role="alert"], [aria-live]');
+    for (var i = 0; i < els.length; i++) {
+      if (pro.contains(els[i]) || !els[i].offsetParent) continue;
+      if (/ください|できません|できませんでした|失敗|ありません|エラー/.test(els[i].textContent)) return true;
+    }
+    return false;
+  }
+  function proVisible() {
+    var r = pro.getBoundingClientRect();
+    return r.top < innerHeight && r.bottom > 0;
+  }
+  function show(trigger) {
+    if (!pc || blocked() || (trigger === "action" && failed()) || proVisible()) return;
+    var list = feats();
+    if (!list.length) return;
+    shown = true;
+    sess(KEY_SHOWN, "1");
+    var box = document.createElement("aside");
+    box.className = "upsell-toast";
+    box.setAttribute("aria-label", "買い切り版のご案内");
+    box.setAttribute("aria-live", "polite");
+    document.body.appendChild(box);
+    var p = document.createElement("p");
+    p.textContent = trigger === "limit"
+      ? "この先は買い切り版の機能です。パソコン用の買い切り版(¥100・税込)なら:"
+      : "うまくできましたか? パソコン用の買い切り版(¥100・税込)なら、さらに:";
+    var ul = document.createElement("ul");
+    list.forEach(function (t) { var li = document.createElement("li"); li.textContent = t; ul.appendChild(li); });
+    var a = document.createElement("a");
+    a.className = "upsell-go";
+    a.id = "upsellToastLink";
+    a.href = buy.href;
+    a.target = "_blank";
+    a.rel = "noopener";
+    a.textContent = "BOOTHで見る(新しいタブ)";
+    var bg = getComputedStyle(buy).backgroundColor;
+    if (bg && !/rgba?\(0, 0, 0, 0\)|transparent/.test(bg)) a.style.background = bg;
+    var x = document.createElement("button");
+    x.type = "button";
+    x.className = "upsell-x";
+    x.setAttribute("aria-label", "この案内を閉じる");
+    x.textContent = "×";
+    function close(remember) {
+      if (box.parentNode) box.parentNode.removeChild(box);
+      document.removeEventListener("keydown", onKey);
+      if (remember) store(KEY_CLOSED, String(Date.now() + 7 * 864e5));
+    }
+    // Escはページ側の操作(選択解除など)にも使われるので、案内の中にフォーカスがある時だけ閉じる
+    function onKey(e) { if (e.key === "Escape" && box.contains(document.activeElement)) close(true); }
+    x.addEventListener("click", function () { close(true); });
+    a.addEventListener("click", function () { setTimeout(function () { close(false); }, 0); });
+    document.addEventListener("keydown", onKey);
+    setTimeout(function () {
+      var note = document.createElement("small");
+      note.className = "upsell-note";
+      note.textContent = "スマホではファイルを開けない機種があります";
+      box.appendChild(x); box.appendChild(p); box.appendChild(ul); box.appendChild(a); box.appendChild(note);
+    }, 50);
+    gtagEv("upsell_show", { trigger: trigger });
+  }
+
+  // 保存・コピー・印刷・書き出しを押した直後(結果を受け取れたタイミング)
+  var OK = /保存|コピー|印刷|書き出|ダウンロード|共有|PDF/;
+  var NG = /読み込|リセット|消|削除|このブラウザに保存|確認|イメージを見る|戻/;
+  document.addEventListener("click", function (e) {
+    var el = e.target && e.target.closest ? e.target.closest("button, a[download], input[type=button], input[type=submit]") : null;
+    if (!el || el.closest("#pro-section, .upsell-toast, #anshin")) return;
+    var label = (el.textContent || el.value || "").replace(/\s+/g, " ");
+    if (!OK.test(label) || NG.test(label)) return;
+    setTimeout(function () { show("action"); }, 1500);
+  }, true);
+
+  // 無料版の上限まわり
+  // (1) ページが出す「買い切り版」の一文に、購入欄へのリンクを足す(スマホでも)。🔒のタブは薄く表示されているので入れない
+  // (2) 案内(パソコンのみ)は、はっきりした合図のときだけ出す: 🔒のクリック・買い切り版にふれたalert・
+  //     初めて出た「〜まで/のみ/以降/入っていません」の上限の一文(計算のたびに出る誘導文や、同じ文の描き直しでは出さない)
+  var SKIP = "#pro-section, .upsell-toast, .upsell-top, #anshin, a, button, label, select, option, h1, h2, h3, .badge, header, footer, nav, textarea, pre, code, [contenteditable], svg";
+  var LIMIT = /まで|のみ|以降|入っていません/;
+  var seenText = {}, ready = false;
+  function goPro(e) {
+    if (e) e.preventDefault();
+    pro.setAttribute("tabindex", "-1");
+    pro.scrollIntoView({ behavior: "smooth", block: "start" });
+    pro.focus({ preventScroll: true });
+  }
+  function linkify(root, deep) {
+    var limitHit = false;
+    var els = root.matches("p, div, span, li") ? [root] : [];
+    if (deep) els = els.concat([].slice.call(root.querySelectorAll("p, div, span, li")));
+    els.forEach(function (el) {
+      if (el.closest(SKIP) || el.closest('[role="radio"], [role="option"], [role="tab"], [role="button"], [tabindex]:not([tabindex="-1"])') || el.querySelector("a, button, p, div, li, input, label")) return;
+      // 選択肢の「○○(買い切り版)」ではなく、文として買い切り版にふれている要素だけ
+      var own = "";
+      for (var n = el.firstChild; n; n = n.nodeType === 1 && n.className === "upsell-inline" ? null : n.nextSibling) if (n.nodeType === 3) own += n.nodeValue;
+      own = own.trim();
+      if (own.indexOf("買い切り版") < 0 || /[((]買い切り版[))]$/.test(own) || /^🔒/.test(own)) return;
+      var key = own.replace(/\d+/g, "#");
+      if (ready && !seenText[key] && LIMIT.test(own) && !el.closest(".teaser, #teaser, [id$=teaser], #tz")) limitHit = true;
+      seenText[key] = 1;
+      if (el.querySelector(".upsell-inline")) return;
+      var a = document.createElement("a");
+      a.className = "upsell-inline";
+      a.href = "#pro-section";
+      a.setAttribute("aria-label", "くわしく:買い切り版の説明へ移動");
+      a.textContent = "くわしく";
+      var ar = document.createElement("span");
+      ar.setAttribute("aria-hidden", "true");
+      ar.textContent = " ↓";
+      a.appendChild(ar);
+      a.addEventListener("click", goPro);
+      el.appendChild(document.createTextNode(" "));
+      el.appendChild(a);
+    });
+    return limitHit;
+  }
+  linkify(document.body, true);
+  setTimeout(function () { ready = true; }, 1500);
+  var topLink = document.querySelector("#upsellTop a");
+  if (topLink) topLink.addEventListener("click", goPro);
+  new MutationObserver(function (ms) {
+    // 変わったところだけを調べる(足された要素はその中も、文字の変更は親要素だけ)
+    var hit = false, done = new Set();
+    function check(t, deep) {
+      if (!t || t.nodeType !== 1 || done.has(t) || t.closest(".upsell-toast")) return;
+      done.add(t);
+      if (linkify(t, deep)) hit = true;
+    }
+    ms.forEach(function (m) {
+      if (m.type === "characterData") { check(m.target.parentNode, false); return; }
+      check(m.target, false);
+      for (var i = 0; i < m.addedNodes.length; i++) if (m.addedNodes[i].nodeType === 1) check(m.addedNodes[i], true);
+    });
+    if (hit) setTimeout(function () { show("limit"); }, 800);
+  }).observe(document.body, { childList: true, subtree: true, characterData: true });
+  document.addEventListener("click", function (e) {
+    var el = e.target && e.target.closest ? e.target.closest("button, div, span, li") : null;
+    var first = el && el.firstChild && el.firstChild.nodeType === 3 ? el.firstChild.nodeValue : "";
+    if (!/^\s*🔒/.test(first) || e.target.closest("#pro-section")) return;
+    if (pc) setTimeout(function () { show("limit"); }, 300); else goPro();
+  }, true);
+  var origAlert = window.alert;
+  window.alert = function (msg) {
+    var r = origAlert.apply(window, arguments);
+    if (/買い切り版/.test(String(msg))) setTimeout(function () { show("limit"); }, 300);
+    return r;
+  };
+})();
+</script>
+<!--UPSELL_JS_END-->
+</body>
+</html>
